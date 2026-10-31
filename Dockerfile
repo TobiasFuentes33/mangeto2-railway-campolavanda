@@ -5,6 +5,7 @@ FROM php:8.2-fpm-bookworm
 
 ARG DEBIAN_FRONTEND=noninteractive
 
+
 # PHP extensions required for Magento 2.4 (and dependencies)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
