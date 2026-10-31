@@ -75,8 +75,12 @@ RUN curl -fsSL "https://codeload.github.com/magento/magento2/zip/refs/tags/${MAG
 
 # Include Breeze Evolution in the image for new installations.
 # Existing Railway volumes are NOT upgraded automatically by this Dockerfile.
-RUN COMPOSER_ALLOW_SUPERUSER=1 composer require swissup/breeze-evolution:^3.1.1 \
-    --update-no-dev --prefer-dist --no-interaction
+# BuildKit secret is ephemeral and never copied to the resulting image.
+RUN --mount=type=secret,id=magento_auth,required=true \
+    composer config repositories.magento composer https://repo.magento.com \
+    && COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_AUTH="$(cat /run/secrets/magento_auth)" \
+       composer require swissup/breeze-evolution:^3.1.1 \
+       --update-with-all-dependencies --update-no-dev --prefer-dist --no-interaction
 
 # Permissions for var/ and pub/ (Magento needs to write)
 RUN mkdir -p /var/www/html/var /var/www/html/pub/static /var/www/html/pub/media \
