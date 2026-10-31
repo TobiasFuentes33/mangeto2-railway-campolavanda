@@ -75,7 +75,7 @@ RUN curl -fsSL "https://codeload.github.com/magento/magento2/zip/refs/tags/${MAG
 # Include Breeze Evolution in the image for new installations.
 # Existing Railway volumes are NOT upgraded automatically by this Dockerfile.
 RUN COMPOSER_ALLOW_SUPERUSER=1 composer require swissup/breeze-evolution:^3.1.1 \
-    --no-dev --prefer-dist --no-interaction
+    --update-no-dev --prefer-dist --no-interaction
 
 # Permissions for var/ and pub/ (Magento needs to write)
 RUN mkdir -p /var/www/html/var /var/www/html/pub/static /var/www/html/pub/media \
