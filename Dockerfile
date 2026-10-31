@@ -58,6 +58,8 @@ COPY docker/nginx-magento.conf /etc/nginx/sites-available/magento.conf
 RUN ln -sf /etc/nginx/sites-available/magento.conf /etc/nginx/sites-enabled/magento.conf
 
 COPY docker/entrypoint.sh /entrypoint.sh
+COPY docker/install-breeze.sh /usr/local/bin/install-breeze
+RUN chmod +x /usr/local/bin/install-breeze
 RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
 
 WORKDIR /var/www/html
