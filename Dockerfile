@@ -5,7 +5,6 @@ FROM php:8.2-fpm-bookworm
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-
 # PHP extensions required for Magento 2.4 (and dependencies)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
@@ -72,15 +71,6 @@ RUN curl -fsSL "https://codeload.github.com/magento/magento2/zip/refs/tags/${MAG
     && cp -r "/tmp/magento2-${MAGENTO_VERSION_TAG}"/. /var/www/html/ \
     && rm -rf /tmp/magento.zip "/tmp/magento2-${MAGENTO_VERSION_TAG}" \
     && COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --prefer-dist --no-interaction
-
-# Include Breeze Evolution in the image for new installations.
-# Existing Railway volumes are NOT upgraded automatically by this Dockerfile.
-# BuildKit secret is ephemeral and never copied to the resulting image.
-RUN --mount=type=secret,id=magento_auth,required=true \
-    composer config repositories.magento composer https://repo.magento.com \
-    && COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_AUTH="$(cat /run/secrets/magento_auth)" \
-       composer require swissup/breeze-evolution:^3.1.1 \
-       --update-with-all-dependencies --update-no-dev --prefer-dist --no-interaction
 
 # Permissions for var/ and pub/ (Magento needs to write)
 RUN mkdir -p /var/www/html/var /var/www/html/pub/static /var/www/html/pub/media \
