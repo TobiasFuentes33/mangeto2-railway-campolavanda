@@ -6,6 +6,7 @@ on:
     branches: [diseno-lavanda]
     paths:
       - Dockerfile
+      - Dockerfile.breeze-test
       - docker/**
       - .github/workflows/validate-breeze.yml
 
@@ -33,7 +34,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./Dockerfile
+          file: ./Dockerfile.breeze-test
           push: false
           secret-files: |
             magento_auth=${{ runner.temp }}/magento-auth.json
