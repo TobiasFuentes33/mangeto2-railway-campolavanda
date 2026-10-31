@@ -21,12 +21,22 @@ jobs:
         uses: actions/checkout@v4
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
+      - name: Prepare temporary Composer authentication
+        env:
+          MAGENTO_PUBLIC_KEY: ${{ secrets.MAGENTO_PUBLIC_KEY }}
+          MAGENTO_PRIVATE_KEY: ${{ secrets.MAGENTO_PRIVATE_KEY }}
+        run: |
+          test -n "$MAGENTO_PUBLIC_KEY" && test -n "$MAGENTO_PRIVATE_KEY"
+          python3 -c 'import json,os; f=open(os.environ["RUNNER_TEMP"]+"/magento-auth.json","w"); json.dump({"http-basic":{"repo.magento.com":{"username":os.environ["MAGENTO_PUBLIC_KEY"],"password":os.environ["MAGENTO_PRIVATE_KEY"]}}},f); f.close()'
+          chmod 600 "$RUNNER_TEMP/magento-auth.json"
       - name: Build Magento and Breeze without deploying
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
           push: false
+          secret-files: |
+            magento_auth=${{ runner.temp }}/magento-auth.json
           tags: campo-lavanda-magento:breeze-test
           cache-from: type=gha
           cache-to: type=gha,mode=min
